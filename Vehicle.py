@@ -1,4 +1,6 @@
 import numpy as np
+import math
+import matplotlib.pyplot as plt
 
 k = 0.5  # control gain
 Kp = 1.0  # speed proportional gain
@@ -24,7 +26,7 @@ class Vehicle (object):
         self.max_steer = max_steer
         print("Position: " + str(self.getX()) + " and " + str(self.getY()))
         
-    def plot_car(x, y, yaw, steer=0.0, cabcolor="-r", truckcolor="-k"):
+    def plot_car(self, x, y, yaw, steer=0.0, cabcolor="-r", truckcolor="-k"):
         outline = np.array([[-BACKTOWHEEL, (LENGTH - BACKTOWHEEL), (LENGTH - BACKTOWHEEL), -BACKTOWHEEL, -BACKTOWHEEL],
                             [WIDTH / 2, WIDTH / 2, - WIDTH / 2, -WIDTH / 2, WIDTH / 2]])
 
@@ -55,7 +57,21 @@ class Vehicle (object):
         rr_wheel = (rr_wheel.T.dot(Rot1)).T
         rl_wheel = (rl_wheel.T.dot(Rot1)).T
 
-        outline[0, :] += x
+        print(x)
+
+       # print(outline[0, :])
+        outline[0, :] += self.x
+        outline[1, :] += self.y
+        fr_wheel[0, :] += self.x
+        fr_wheel[1, :] += self.y
+        rr_wheel[0, :] += self.x
+        rr_wheel[1, :] += self.y
+        fl_wheel[0, :] += self.x
+        fl_wheel[1, :] += self.y
+        rl_wheel[0, :] += self.x
+        rl_wheel[1, :] += self.y
+
+        outline[0, :] = np.add(outline[0, :], x)
         outline[1, :] += y
         fr_wheel[0, :] += x
         fr_wheel[1, :] += y
@@ -77,6 +93,7 @@ class Vehicle (object):
         plt.plot(np.array(rl_wheel[0, :]).flatten(),
                     np.array(rl_wheel[1, :]).flatten(), truckcolor)
         plt.plot(x, y, "*")
+        plt.show()
 
     def update(self, acceleration, delta, dt):
         delta = np.clip(delta, -max_steer, max_steer)
