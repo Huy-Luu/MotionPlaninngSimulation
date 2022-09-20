@@ -1,5 +1,5 @@
 
-import UTMmodule as utm
+from UTMmodule import UTMmodule as utm
 import math
 import numpy as np
 
@@ -10,7 +10,7 @@ class PathGenerator():
         b = y0 - a*x0
         return a,b
 
-    def calc_perpendicular(x,y,a,b):
+    def calcPerpendicular(x,y,a,b):
         a_p = -1/a
         b_p = y - a_p * x
         return a_p, b_p
@@ -31,7 +31,7 @@ class PathGenerator():
         y = []
 
         for i in range (0,len(lat)):
-            x_temp, y_temp = utm.from_latlon(lat[i],lon[i])
+            x_temp, y_temp = utm.fromLatlon(lat[i],lon[i])
             x.append(x_temp)
             y.append(y_temp)
         
@@ -73,12 +73,12 @@ class PathGenerator():
             path_x = np.append(path_x, line_x)
             end_point_each_segments.append(len(path_x))
 
-            a_p, b_p = calc_perpendicular(line_x[10], line_y[10], a, b)
+            a_p, b_p = calcPerpendicular(line_x[10], line_y[10], a, b)
             ap.append(a_p)
             bp.append(b_p)
             arc_x.append(line_x[10])
             arc_y.append(line_y[10])
-            a_p, b_p = calc_perpendicular(line_x[len(line_x)-10], line_y[len(line_y)-10], a, b)
+            a_p, b_p = calcPerpendicular(line_x[len(line_x)-10], line_y[len(line_y)-10], a, b)
             ap.append(a_p)
             bp.append(b_p)
             arc_x.append(line_x[len(line_x)-10])

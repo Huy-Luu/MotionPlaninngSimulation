@@ -26,7 +26,7 @@ class Vehicle (object):
         self.max_steer = max_steer
         print("Position: " + str(self.getX()) + " and " + str(self.getY()))
         
-    def plot_car(self, x, y, yaw, steer=0.0, cabcolor="-r", truckcolor="-k"):
+    def plotCar(self, x, y, yaw, steer=0.0, cabcolor="-r", truckcolor="-k"):
         outline = np.array([[-BACKTOWHEEL, (LENGTH - BACKTOWHEEL), (LENGTH - BACKTOWHEEL), -BACKTOWHEEL, -BACKTOWHEEL],
                             [WIDTH / 2, WIDTH / 2, - WIDTH / 2, -WIDTH / 2, WIDTH / 2]])
 

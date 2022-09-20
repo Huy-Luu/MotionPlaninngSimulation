@@ -5,7 +5,7 @@ from Point import OriginalPoint
 
 print("Init car")
 vehicle = Vehicle(0.0, 0.0, 0.0, 0.0, 30)
-#vehicle.plot_car(1.0, 1.0, 1.0)
+#vehicle.plotCar(1.0, 1.0, 1.0)
 op1 = OriginalPoint(10.772580, 106.658847)
 op2 = OriginalPoint(10.773004, 106.659656)
 op3 = OriginalPoint(10.772529, 106.659708)

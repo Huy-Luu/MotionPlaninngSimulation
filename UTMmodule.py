@@ -10,7 +10,7 @@ except ImportError:
     use_numpy = False
 
 class UTMmodule(object):
-    __all__ = ['to_latlon', 'from_latlon']
+    __all__ = ['toLatlon', 'fromLatlon']
 
     K0 = 0.9996
 
@@ -41,7 +41,7 @@ class UTMmodule(object):
     ZONE_LETTERS = "CDEFGHJKLMNPQRSTUVWXX"
 
 
-    def in_bounds(x, lower, upper, upper_strict=False):
+    def inBounds(x, lower, upper, upper_strict=False):
         if upper_strict and use_numpy:
             return lower <= mathlib.min(x) and mathlib.max(x) < upper
         elif upper_strict and not use_numpy:
@@ -51,7 +51,7 @@ class UTMmodule(object):
         return lower <= x <= upper
 
 
-    def check_valid_zone(zone_number, zone_letter):
+    def checkValidZone(zone_number, zone_letter):
         if not 1 <= zone_number <= 60:
             raise OutOfRangeError('zone number out of range (must be between 1 and 60)')
 
@@ -62,7 +62,7 @@ class UTMmodule(object):
                 raise OutOfRangeError('zone letter out of range (must be between C and X)')
 
 
-    def mixed_signs(x):
+    def mixedSigns(x):
         return use_numpy and mathlib.min(x) < 0 and mathlib.max(x) >= 0
 
 
@@ -72,12 +72,12 @@ class UTMmodule(object):
         return x < 0
 
 
-    def mod_angle(value):
+    def modAngle(value):
         """Returns angle in radians to be between -pi and pi"""
         return (value + mathlib.pi) % (2 * mathlib.pi) - mathlib.pi
 
 
-    def to_latlon(easting, northing, zone_number, zone_letter=None, northern=None, strict=True):
+    def toLatlon(easting, northing, zone_number, zone_letter=None, northern=None, strict=True):
         """This function converts UTM coordinates to Latitude and Longitude
             Parameters
             ----------
@@ -110,12 +110,12 @@ class UTMmodule(object):
             raise ValueError('set either zone_letter or northern, but not both')
 
         if strict:
-            if not in_bounds(easting, 100000, 1000000, upper_strict=True):
+            if not inBounds(easting, 100000, 1000000, upper_strict=True):
                 raise OutOfRangeError('easting out of range (must be between 100,000 m and 999,999 m)')
-            if not in_bounds(northing, 0, 10000000):
+            if not inBounds(northing, 0, 10000000):
                 raise OutOfRangeError('northing out of range (must be between 0 m and 10,000,000 m)')
         
-        check_valid_zone(zone_number, zone_letter)
+        checkValidZone(zone_number, zone_letter)
         
         if zone_letter:
             zone_letter = zone_letter.upper()
@@ -170,13 +170,13 @@ class UTMmodule(object):
                     d3 / 6 * (1 + 2 * p_tan2 + c) +
                     d5 / 120 * (5 - 2 * c + 28 * p_tan2 - 3 * c2 + 8 * E_P2 + 24 * p_tan4)) / p_cos
 
-        longitude = mod_angle(longitude + mathlib.radians(zone_number_to_central_longitude(zone_number)))
+        longitude = modAngle(longitude + mathlib.radians(zoneNumberToCentralLongitude(zone_number)))
 
         return (mathlib.degrees(latitude),
                 mathlib.degrees(longitude))
 
 
-    def from_latlon(latitude, longitude, force_zone_number=None, force_zone_letter=None):
+    def fromLatlon(latitude, longitude, force_zone_number=None, force_zone_letter=None):
         """This function converts Latitude and Longitude to UTM coordinate
             Parameters
             ----------
@@ -205,12 +205,12 @@ class UTMmodule(object):
                 can be accessed in [1]_
         .. _[1]: http://www.jaworski.ca/utmzones.htm
         """
-        if not in_bounds(latitude, -80, 84):
+        if not inBounds(latitude, -80, 84):
             raise OutOfRangeError('latitude out of range (must be between 80 deg S and 84 deg N)')
-        if not in_bounds(longitude, -180, 180):
+        if not inBounds(longitude, -180, 180):
             raise OutOfRangeError('longitude out of range (must be between 180 deg W and 180 deg E)')
         if force_zone_number is not None:
-            check_valid_zone(force_zone_number, force_zone_letter)
+            checkValidZone(force_zone_number, force_zone_letter)
 
         lat_rad = mathlib.radians(latitude)
         lat_sin = mathlib.sin(lat_rad)
@@ -221,23 +221,23 @@ class UTMmodule(object):
         lat_tan4 = lat_tan2 * lat_tan2
 
         if force_zone_number is None:
-            zone_number = latlon_to_zone_number(latitude, longitude)
+            zone_number = latlonToZoneNumber(latitude, longitude)
         else:
             zone_number = force_zone_number
 
         if force_zone_letter is None:
-            zone_letter = latitude_to_zone_letter(latitude)
+            zone_letter = latitudeToZoneLetter(latitude)
         else:
             zone_letter = force_zone_letter
 
         lon_rad = mathlib.radians(longitude)
-        central_lon = zone_number_to_central_longitude(zone_number)
+        central_lon = zoneNumberToCentralLongitude(zone_number)
         central_lon_rad = mathlib.radians(central_lon)
 
         n = R / mathlib.sqrt(1 - E * lat_sin**2)
         c = E_P2 * lat_cos**2
 
-        a = lat_cos * mod_angle(lon_rad - central_lon_rad)
+        a = lat_cos * modAngle(lon_rad - central_lon_rad)
         a2 = a * a
         a3 = a2 * a
         a4 = a3 * a
@@ -257,7 +257,7 @@ class UTMmodule(object):
                                             a4 / 24 * (5 - lat_tan2 + 9 * c + 4 * c**2) +
                                             a6 / 720 * (61 - 58 * lat_tan2 + lat_tan4 + 600 * c - 330 * E_P2)))
 
-        if mixed_signs(latitude):
+        if mixedSigns(latitude):
             raise ValueError("latitudes must all have the same sign")
         elif negative(latitude):
             northing += 10000000
@@ -265,7 +265,7 @@ class UTMmodule(object):
         return easting, northing
 
 
-    def latitude_to_zone_letter(latitude):
+    def latitudeToZoneLetter(latitude):
         # If the input is a numpy array, just use the first element
         # User responsibility to make sure that all points are in one zone
         if use_numpy and isinstance(latitude, mathlib.ndarray):
@@ -277,7 +277,7 @@ class UTMmodule(object):
             return None
 
 
-    def latlon_to_zone_number(latitude, longitude):
+    def latlonToZoneNumber(latitude, longitude):
         # If the input is a numpy array, just use the first element
         # User responsibility to make sure that all points are in one zone
         if use_numpy:
@@ -302,5 +302,5 @@ class UTMmodule(object):
         return int((longitude + 180) / 6) + 1
 
 
-    def zone_number_to_central_longitude(zone_number):
+    def zoneNumberToCentralLongitude(zone_number):
         return (zone_number - 1) * 6 - 180 + 3
