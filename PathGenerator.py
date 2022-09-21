@@ -2,48 +2,49 @@
 from UTMmodule import UTMmodule as utm
 import math
 import numpy as np
+from Point import OriginalPoint
+from Point import Point
 
 class PathGenerator():
 
-    def line(x0, y0, x1, y1):
-        a = (y0-y1)/(x0-x1)
-        b = y0 - a*x0
+    def line(p0, p1):
+        a = (p0.y - p1.y)/(p0.x - p1.x)
+        b = p0.y - a*p0.x
         return a,b
 
-    def calcPerpendicular(x,y,a,b):
+    def calcPerpendicular(p,a,b):
         a_p = -1/a
-        b_p = y - a_p * x
+        b_p = p.y - a_p * p.x
         return a_p, b_p
 
     def intersection(a1,b1,a2,b2):
         x = (b1-b2)/(a2-a1)
         y = a1 * x + b1
-        return x,y
+        p = Point(x, y)
+        return p
 
-    def distance(x1,y1,x2,y2):
-        return math.sqrt((x1-x2)**2 + (y1-y2)**2)
+    def distance(p1, p2):
+        return math.sqrt((p1.x - p2.x)**2 + (p1.y - p2.y)**2)
 
     def vectorAngle(center_x, center_y, px, py):
         return math.atan2(py - center_y, px - center_x)
 
-    def generatePath(lat, lon):
-        x = []
-        y = []
+    def generatePath(og_points):
+        cv_points = []
 
-        for i in range (0,len(lat)):
-            x_temp, y_temp = utm.fromLatlon(lat[i],lon[i])
-            x.append(x_temp)
-            y.append(y_temp)
+        for i in range (0,len(og_points)):
+            x_temp, y_temp = utm.fromLatlon(og_points[i].getLat(), og_points[i].getLon())
+            cv_points.append(Point(x_temp, y_temp))
         
-        offset_x = x[0]
-        offset_y = y[0]
+        offset_x = cv_points[0].x
+        offset_y = cv_points[0].y
             
         #offset
-        for i in range(0,len(x)):
-            x[i] = x[i] - offset_x
-            y[i] = y[i] - offset_y
+        for i in range(0,len(cv_points)):
+            cv_points[i].x = cv_points[i].x - offset_x
+            cv_points[i].y = cv_points[i].y - offset_y
         
-        print(x,y)
+        print(cv_points)
 
         line_x = []
         line_y = []
@@ -56,14 +57,14 @@ class PathGenerator():
         arc_y = []
 
         #draw lines
-        for i in range(0,len(x)-1):
-            a, b = line(x[i], y[i], x[i+1], y[i+1])
+        for i in range(0,len(cv_points)-1):
+            a, b = line(cv_points[i], cv_points[i+1])
             #print(a,b)
             #length = math.sqrt((x[i]-x[i+1])**2 + (y[i]- y[i+1])**2)
-            length = distance(x[i], y[i], x[i+1], y[i+1])
+            length = distance(cv_points[i], cv_points[i+1])
             segments = int(length * 10)
-            x_delta = (x[i+1] - x[i])/ segments
-            y_delta = (y[i+1] - y[i])/ segments
+            x_delta = (cv_points[i+1] - cv_points[i])/ segments
+            y_delta = (cv_points[i+1] - cv_points[i])/ segments
             for j in range(0,segments):
                 #line_y.append(a*line_x[j] + b)
                 line_x.append(x[i] + j * x_delta)
