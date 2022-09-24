@@ -41,7 +41,8 @@ class UTMmodule(object):
     ZONE_LETTERS = "CDEFGHJKLMNPQRSTUVWXX"
 
 
-    def inBounds(x, lower, upper, upper_strict=False):
+    def inBounds(self, x, lower, upper, upper_strict=False):
+        print(x, lower, upper)
         if upper_strict and use_numpy:
             return lower <= mathlib.min(x) and mathlib.max(x) < upper
         elif upper_strict and not use_numpy:
@@ -51,7 +52,7 @@ class UTMmodule(object):
         return lower <= x <= upper
 
 
-    def checkValidZone(zone_number, zone_letter):
+    def checkValidZone(self, zone_number, zone_letter):
         if not 1 <= zone_number <= 60:
             raise OutOfRangeError('zone number out of range (must be between 1 and 60)')
 
@@ -62,17 +63,17 @@ class UTMmodule(object):
                 raise OutOfRangeError('zone letter out of range (must be between C and X)')
 
 
-    def mixedSigns(x):
+    def mixedSigns(self, x):
         return use_numpy and mathlib.min(x) < 0 and mathlib.max(x) >= 0
 
 
-    def negative(x):
+    def negative(self, x):
         if use_numpy:
             return mathlib.max(x) < 0
         return x < 0
 
 
-    def modAngle(value):
+    def modAngle(self, value):
         """Returns angle in radians to be between -pi and pi"""
         return (value + mathlib.pi) % (2 * mathlib.pi) - mathlib.pi
 
@@ -176,7 +177,7 @@ class UTMmodule(object):
                 mathlib.degrees(longitude))
 
 
-    def fromLatlon(latitude, longitude, force_zone_number=None, force_zone_letter=None):
+    def fromLatlon(self, latitude, longitude, force_zone_number=None, force_zone_letter=None):
         """This function converts Latitude and Longitude to UTM coordinate
             Parameters
             ----------
@@ -205,12 +206,13 @@ class UTMmodule(object):
                 can be accessed in [1]_
         .. _[1]: http://www.jaworski.ca/utmzones.htm
         """
-        if not inBounds(latitude, -80, 84):
-            raise OutOfRangeError('latitude out of range (must be between 80 deg S and 84 deg N)')
-        if not inBounds(longitude, -180, 180):
-            raise OutOfRangeError('longitude out of range (must be between 180 deg W and 180 deg E)')
+        print("In UTM module: " + str(latitude) + " " + str(longitude))
+        if not self.inBounds(latitude, -80, 84):
+            raise self.OutOfRangeError('latitude out of range (must be between 80 deg S and 84 deg N)')
+        if not self.inBounds(longitude, -180, 180):
+            raise self.OutOfRangeError('longitude out of range (must be between 180 deg W and 180 deg E)')
         if force_zone_number is not None:
-            checkValidZone(force_zone_number, force_zone_letter)
+            self.checkValidZone(force_zone_number, force_zone_letter)
 
         lat_rad = mathlib.radians(latitude)
         lat_sin = mathlib.sin(lat_rad)
@@ -221,63 +223,63 @@ class UTMmodule(object):
         lat_tan4 = lat_tan2 * lat_tan2
 
         if force_zone_number is None:
-            zone_number = latlonToZoneNumber(latitude, longitude)
+            zone_number = self.latlonToZoneNumber(latitude, longitude)
         else:
             zone_number = force_zone_number
 
         if force_zone_letter is None:
-            zone_letter = latitudeToZoneLetter(latitude)
+            zone_letter = self.latitudeToZoneLetter(latitude)
         else:
             zone_letter = force_zone_letter
 
         lon_rad = mathlib.radians(longitude)
-        central_lon = zoneNumberToCentralLongitude(zone_number)
+        central_lon = self.zoneNumberToCentralLongitude(zone_number)
         central_lon_rad = mathlib.radians(central_lon)
 
-        n = R / mathlib.sqrt(1 - E * lat_sin**2)
-        c = E_P2 * lat_cos**2
+        n = self.R / mathlib.sqrt(1 - self.E * lat_sin**2)
+        c = self.E_P2 * lat_cos**2
 
-        a = lat_cos * modAngle(lon_rad - central_lon_rad)
+        a = lat_cos * self.modAngle(lon_rad - central_lon_rad)
         a2 = a * a
         a3 = a2 * a
         a4 = a3 * a
         a5 = a4 * a
         a6 = a5 * a
 
-        m = R * (M1 * lat_rad -
-                M2 * mathlib.sin(2 * lat_rad) +
-                M3 * mathlib.sin(4 * lat_rad) -
-                M4 * mathlib.sin(6 * lat_rad))
+        m = self.R * (self.M1 * lat_rad -
+                self.M2 * mathlib.sin(2 * lat_rad) +
+                self.M3 * mathlib.sin(4 * lat_rad) -
+                self.M4 * mathlib.sin(6 * lat_rad))
 
-        easting = K0 * n * (a +
+        easting = self.K0 * n * (a +
                             a3 / 6 * (1 - lat_tan2 + c) +
-                            a5 / 120 * (5 - 18 * lat_tan2 + lat_tan4 + 72 * c - 58 * E_P2)) + 500000
+                            a5 / 120 * (5 - 18 * lat_tan2 + lat_tan4 + 72 * c - 58 * self.E_P2)) + 500000
 
-        northing = K0 * (m + n * lat_tan * (a2 / 2 +
+        northing = self.K0 * (m + n * lat_tan * (a2 / 2 +
                                             a4 / 24 * (5 - lat_tan2 + 9 * c + 4 * c**2) +
-                                            a6 / 720 * (61 - 58 * lat_tan2 + lat_tan4 + 600 * c - 330 * E_P2)))
+                                            a6 / 720 * (61 - 58 * lat_tan2 + lat_tan4 + 600 * c - 330 * self.E_P2)))
 
-        if mixedSigns(latitude):
+        if self.mixedSigns(latitude):
             raise ValueError("latitudes must all have the same sign")
-        elif negative(latitude):
+        elif self.negative(latitude):
             northing += 10000000
 
         return easting, northing
 
 
-    def latitudeToZoneLetter(latitude):
+    def latitudeToZoneLetter(self, latitude):
         # If the input is a numpy array, just use the first element
         # User responsibility to make sure that all points are in one zone
         if use_numpy and isinstance(latitude, mathlib.ndarray):
             latitude = latitude.flat[0]
 
         if -80 <= latitude <= 84:
-            return ZONE_LETTERS[int(latitude + 80) >> 3]
+            return self.ZONE_LETTERS[int(latitude + 80) >> 3]
         else:
             return None
 
 
-    def latlonToZoneNumber(latitude, longitude):
+    def latlonToZoneNumber(self, latitude, longitude):
         # If the input is a numpy array, just use the first element
         # User responsibility to make sure that all points are in one zone
         if use_numpy:
@@ -302,5 +304,5 @@ class UTMmodule(object):
         return int((longitude + 180) / 6) + 1
 
 
-    def zoneNumberToCentralLongitude(zone_number):
+    def zoneNumberToCentralLongitude(self, zone_number):
         return (zone_number - 1) * 6 - 180 + 3

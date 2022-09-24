@@ -2,6 +2,7 @@ import numpy as np
 from Vehicle import Vehicle
 from UTMmodule import UTMmodule
 from Point import OriginalPoint
+from PathGenerator import PathGenerator
 
 
 print("Init car")
@@ -17,7 +18,10 @@ og_points.append(OriginalPoint(10.772580, 106.658847))
 og_points.append(OriginalPoint(10.773004, 106.659656))
 og_points.append(OriginalPoint(10.772529, 106.659708))
 
+path_generator_instance  = PathGenerator()
+utm = UTMmodule()
 
+path_generator_instance.generatePath(og_points, utm)
 
 
 
