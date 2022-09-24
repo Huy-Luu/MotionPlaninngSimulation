@@ -17,6 +17,7 @@ og_points = []
 og_points.append(OriginalPoint(10.772580, 106.658847))
 og_points.append(OriginalPoint(10.773004, 106.659656))
 og_points.append(OriginalPoint(10.772529, 106.659708))
+#og_points.append(OriginalPoint(10.772640, 106.659920))
 
 path_generator_instance  = PathGenerator()
 utm = UTMmodule()

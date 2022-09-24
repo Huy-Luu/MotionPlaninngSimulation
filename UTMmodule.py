@@ -42,7 +42,7 @@ class UTMmodule(object):
 
 
     def inBounds(self, x, lower, upper, upper_strict=False):
-        print(x, lower, upper)
+        #print(x, lower, upper)
         if upper_strict and use_numpy:
             return lower <= mathlib.min(x) and mathlib.max(x) < upper
         elif upper_strict and not use_numpy:
@@ -206,7 +206,7 @@ class UTMmodule(object):
                 can be accessed in [1]_
         .. _[1]: http://www.jaworski.ca/utmzones.htm
         """
-        print("In UTM module: " + str(latitude) + " " + str(longitude))
+        #print("In UTM module: " + str(latitude) + " " + str(longitude))
         if not self.inBounds(latitude, -80, 84):
             raise self.OutOfRangeError('latitude out of range (must be between 80 deg S and 84 deg N)')
         if not self.inBounds(longitude, -180, 180):
