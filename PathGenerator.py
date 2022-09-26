@@ -115,4 +115,51 @@ class PathGenerator():
         path_arc = []
 
         print("Angles are: " + str(angles))
+
+        for i in range(0, len(angles), 2):
+            delta = angles[i+1] - angles[i]
+
+            if(abs(delta) > math.radians(180)):
+                if(angles[i]>0):
+                    angles[i+1] = angles[i+1] + math.radians(360)
+                    delta = angles[i+1] - angles[i]
+
+                if(angles[i]<0):
+                    angles[i+1] = angles[i+1] - math.radians(360)
+                    delta = angles[i+1] - angles[i]
+
+            segment = delta/20
+
+            current_step = angles[i]
+            for j in range(0, 20):
+                p_arc_x = radiuses[int(i/2)]*math.cos(current_step) + centers[int(i/2)].x
+                p_arc_y = radiuses[int(i/2)]*math.sin(current_step) + centers[int(i/2)].y
+                path_arc.append(Point(p_arc_x, p_arc_y))
+                current_step += segment
+
+        # for i in range(0, len(path)):
+        #     PathGenerator.printPoint(path[i])
+
+        print("End point each segments:")
+        print(end_point_each_segments)
+
+        # for i in range(0,len(end_point_each_segments)-1):
+        #     path[end_point_each_segments[i]-10: end_point_each_segments[i]+10].x = path_arc[20*i: 20*i+20].x
+        #     path[end_point_each_segments[i]-10: end_point_each_segments[i]+10].y = path_arc[20*i: 20*i+20].y
+
+        for i in range(0,len(end_point_each_segments)-1):
+            count = 0 + i *20
+            for j in range(end_point_each_segments[i]-10, end_point_each_segments[i]+10):
+                path[j].x = path_arc[count].x
+                path[j].y = path_arc[count].y
+                count += 1
             
+        yaw = []
+        for i in range(0, len(path) - 1):
+            yaw_temp = math.atan2(path[i+1].y - path[i].y, path[i+1].x - path[i].x)
+            yaw.append(yaw_temp)
+
+        yaw_temp = yaw[len(yaw)-1]
+        yaw.append(yaw_temp)
+
+        return path, yaw
