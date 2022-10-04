@@ -2,22 +2,17 @@ import numpy as np
 import math
 import matplotlib.pyplot as plt
 
-k = 0.5  # control gain
-Kp = 1.0  # speed proportional gain
-dt = 0.1  # [s] time difference
-L = 0.29  # [m] Wheel base of vehicle
-max_steer = np.radians(30.0)  # [rad] max steering angle
-
-# Vehicle parameters
-LENGTH = 0.41  # [m]
-WIDTH = 0.36  # [m]
-BACKTOWHEEL = 0.03  # [m]
-WHEEL_LEN = 0.13  # [m]
-WHEEL_WIDTH = 0.015  # [m]
-TREAD = 0.33  # [m]
-WB = 0.29  # [m]
-
 class Vehicle (object):
+
+    # Vehicle parameters
+    LENGTH = 0.41  # [m]
+    WIDTH = 0.36  # [m]
+    BACKTOWHEEL = 0.03  # [m]
+    WHEEL_LEN = 0.13  # [m]
+    WHEEL_WIDTH = 0.015  # [m]
+    TREAD = 0.33  # [m]
+    WB = 0.29  # [m]
+
     def __init__ (self, x = 0.0, y = 0.0, yaw = 0.0, v = 0.0, max_steer = 30.0):
         self.x = x
         self.y = y

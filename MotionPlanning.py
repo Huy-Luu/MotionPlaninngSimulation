@@ -1,13 +1,16 @@
+from StanleyController import StanleyController
 import numpy as np
 import matplotlib.pyplot as plt
 from Vehicle import Vehicle
 from UTMmodule import UTMmodule
 from Point import OriginalPoint
 from PathGenerator import PathGenerator
+from StanleyController import StanleyController
 
 
 print("Init car")
 vehicle = Vehicle(0.0, 0.0, 0.0, 0.0, 30)
+scontroller = StanleyController0()
 
 #Initiate a set of original points
 og_points = []
