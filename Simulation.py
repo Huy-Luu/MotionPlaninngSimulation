@@ -4,10 +4,11 @@ import matplotlib.pyplot as plt
 class Simulation:
     
     @staticmethod
-    def simulate(vehicle, dt, max_sim_time, target_speed, scontroller, target_idx, last_idx, cx, cy, cyaw, show_animation):
+    def simulate(vehicle, dt, max_sim_time, target_speed, scontroller, target_idx, last_idx, path, yaw, show_animation):
         time = 0.0
+        cx, cy = zip(*[(float(i.x),float(i.y)) for i in path])
         while max_sim_time >= time and last_idx > target_idx:
-            di, target_idx = scontroller.stanleyControl(vehicle, cx, cy, cyaw, target_idx)
+            di, target_idx = scontroller.stanleyControl(vehicle, path, yaw, target_idx)
             vehicle.update(di, dt)
 
             time += dt

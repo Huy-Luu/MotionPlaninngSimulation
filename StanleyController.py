@@ -23,15 +23,15 @@ class StanleyController:
         angle = angle - remains
         return math.radians(angle)
 
-    def stanleyControl(self, vehicle, cx, cy, cyaw, last_target_idx):
+    def stanleyControl(self, vehicle, path, yaw, last_target_idx):
 
-        current_target_idx, error_front_axle = self.calcTargetIndex(vehicle, cx, cy)
+        current_target_idx, error_front_axle = self.calcTargetIndex(vehicle, path)
 
         if last_target_idx >= current_target_idx:
             current_target_idx = last_target_idx
 
         # theta_e corrects the heading error
-        theta_e = StanleyController.normalizeAngle(cyaw[current_target_idx] - vehicle.yaw)
+        theta_e = StanleyController.normalizeAngle(yaw[current_target_idx] - vehicle.yaw)
         # theta_d corrects the cross track error
         theta_d = np.arctan2(self.k * error_front_axle, vehicle.v)
         # Steering control
@@ -55,14 +55,14 @@ class StanleyController:
         return angle
 
 
-    def calcTargetIndex(self, vehicle, cx, cy):
+    def calcTargetIndex(self, vehicle, path):
         # Calc front axle position
         fx = vehicle.x + vehicle.WB * np.cos(vehicle.yaw)
         fy = vehicle.y + vehicle.WB * np.sin(vehicle.yaw)
 
         # Search nearest point index
-        dx = [fx - icx for icx in cx]
-        dy = [fy - icy for icy in cy]
+        dx = [fx - ipath.x for ipath in path]
+        dy = [fy - ipath.y for ipath in path]
         d = np.hypot(dx, dy)
         target_idx = np.argmin(d)
 

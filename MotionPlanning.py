@@ -29,6 +29,7 @@ path_generator_instance  = PathGenerator()
 utm = UTMmodule()
 
 path, yaw = path_generator_instance.generatePath(og_points, utm)
+print("Type of path: " + str(type(path)))
 
 path_x = []
 path_y = []
@@ -40,10 +41,10 @@ for i in range(len(path)):
 # plt.plot(path_x, path_y, ".r", label="course")
 # plt.show()
 last_idx = len(path_x) -1
-target_idx, _ = scontroller.calcTargetIndex(vehicle, path_x, path_y)
+target_idx, _ = scontroller.calcTargetIndex(vehicle, path)
 print(target_idx)
 
-Simulation.simulate(vehicle, dt, 500, 3, scontroller, target_idx, last_idx, path_x, path_y, yaw, 1)
+Simulation.simulate(vehicle, dt, 500, 3, scontroller, target_idx, last_idx, path, yaw, 1)
 
 
 #print("Point 1: " + str(op1.getLat()) + " and " + str(op1.getLon()))
