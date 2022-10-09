@@ -1,6 +1,7 @@
 import numpy as np
 import math
 import matplotlib.pyplot as plt
+from StanleyController import StanleyController
 
 class Vehicle (object):
 
@@ -12,6 +13,7 @@ class Vehicle (object):
     WHEEL_WIDTH = 0.015  # [m]
     TREAD = 0.33  # [m]
     WB = 0.29  # [m]
+    max_steer = 30
 
     def __init__ (self, x = 0.0, y = 0.0, yaw = 0.0, v = 0.0, max_steer = 30.0):
         self.x = x
@@ -21,12 +23,12 @@ class Vehicle (object):
         self.max_steer = max_steer
         print("Position: " + str(self.getX()) + " and " + str(self.getY()))
         
-    def plotCar(self, x, y, yaw, steer=0.0, cabcolor="-r", truckcolor="-k"):
-        outline = np.array([[-BACKTOWHEEL, (LENGTH - BACKTOWHEEL), (LENGTH - BACKTOWHEEL), -BACKTOWHEEL, -BACKTOWHEEL],
-                            [WIDTH / 2, WIDTH / 2, - WIDTH / 2, -WIDTH / 2, WIDTH / 2]])
+    def plot(self, plt, x, y, yaw, steer=0.0, cabcolor="-r", truckcolor="-k"):
+        outline = np.array([[-self.BACKTOWHEEL, (self.LENGTH - self.BACKTOWHEEL), (self.LENGTH - self.BACKTOWHEEL), -self.BACKTOWHEEL, -self.BACKTOWHEEL],
+                            [self.WIDTH / 2, self.WIDTH / 2, - self.WIDTH / 2, -self.WIDTH / 2, self.WIDTH / 2]])
 
-        fr_wheel = np.array([[WHEEL_LEN, -WHEEL_LEN, -WHEEL_LEN, WHEEL_LEN, WHEEL_LEN],
-                                [-WHEEL_WIDTH - TREAD, -WHEEL_WIDTH - TREAD, WHEEL_WIDTH - TREAD, WHEEL_WIDTH - TREAD, -WHEEL_WIDTH - TREAD]])
+        fr_wheel = np.array([[self.WHEEL_LEN, -self.WHEEL_LEN, -self.WHEEL_LEN, self.WHEEL_LEN, self.WHEEL_LEN],
+                                [-self.WHEEL_WIDTH - self.TREAD, -self.WHEEL_WIDTH - self.TREAD, self.WHEEL_WIDTH - self.TREAD, self.WHEEL_WIDTH - self.TREAD, -self.WHEEL_WIDTH - self.TREAD]])
 
         rr_wheel = np.copy(fr_wheel)
 
@@ -42,8 +44,8 @@ class Vehicle (object):
 
         fr_wheel = (fr_wheel.T.dot(Rot2)).T
         fl_wheel = (fl_wheel.T.dot(Rot2)).T
-        fr_wheel[0, :] += WB
-        fl_wheel[0, :] += WB
+        fr_wheel[0, :] += self.WB
+        fl_wheel[0, :] += self.WB
 
         fr_wheel = (fr_wheel.T.dot(Rot1)).T
         fl_wheel = (fl_wheel.T.dot(Rot1)).T
@@ -88,16 +90,17 @@ class Vehicle (object):
         plt.plot(np.array(rl_wheel[0, :]).flatten(),
                     np.array(rl_wheel[1, :]).flatten(), truckcolor)
         plt.plot(x, y, "*")
-        plt.show()
+        #plt.show()
 
-    def update(self, acceleration, delta, dt):
-        delta = np.clip(delta, -max_steer, max_steer)
+    #def update(self, acceleration, delta, dt):
+    def update(self, delta, dt):
+        delta = np.clip(delta, -self.max_steer, self.max_steer)
 
         self.x += self.v * np.cos(self.yaw) * dt
         self.y += self.v * np.sin(self.yaw) * dt
-        self.yaw += self.v / L * np.tan(delta) * dt
-        self.yaw = normalize_angle(self.yaw)
-        self.v += acceleration * dt
+        self.yaw += self.v / self.WB * np.tan(delta) * dt
+        self.yaw = StanleyController.normalizeAngle(self.yaw)
+        #self.v += acceleration * dt
 
     def getX(self):
         return self.x
