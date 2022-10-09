@@ -1,18 +1,27 @@
 import numpy as np
 import math
-import matplotlib.pyplot as plt
+#import matplotlib.pyplot as plt
 from StanleyController import StanleyController
 
 class Vehicle (object):
 
     # Vehicle parameters
-    LENGTH = 0.41  # [m]
-    WIDTH = 0.36  # [m]
-    BACKTOWHEEL = 0.03  # [m]
-    WHEEL_LEN = 0.13  # [m]
-    WHEEL_WIDTH = 0.015  # [m]
-    TREAD = 0.33  # [m]
-    WB = 0.29  # [m]
+    # LENGTH = 0.41  # [m]
+    # WIDTH = 0.36  # [m]
+    # BACKTOWHEEL = 0.03  # [m]
+    # WHEEL_LEN = 0.13  # [m]
+    # WHEEL_WIDTH = 0.015  # [m]
+    # TREAD = 0.33  # [m]
+    # WB = 0.29  # [m]
+
+    LENGTH = 4.1  # [m]
+    WIDTH = 3.6  # [m]
+    BACKTOWHEEL = 0.3  # [m]
+    WHEEL_LEN = 1.3  # [m]
+    WHEEL_WIDTH = 0.15  # [m]
+    TREAD = 3.3  # [m]
+    WB = 2.9  # [m]
+
     max_steer = 30
 
     def __init__ (self, x = 0.0, y = 0.0, yaw = 0.0, v = 0.0, max_steer = 30.0):
@@ -54,9 +63,9 @@ class Vehicle (object):
         rr_wheel = (rr_wheel.T.dot(Rot1)).T
         rl_wheel = (rl_wheel.T.dot(Rot1)).T
 
-        print(x)
+        #print(x)
 
-       # print(outline[0, :])
+       #print(outline[0, :])
         outline[0, :] += self.x
         outline[1, :] += self.y
         fr_wheel[0, :] += self.x
@@ -68,16 +77,16 @@ class Vehicle (object):
         rl_wheel[0, :] += self.x
         rl_wheel[1, :] += self.y
 
-        outline[0, :] = np.add(outline[0, :], x)
-        outline[1, :] += y
-        fr_wheel[0, :] += x
-        fr_wheel[1, :] += y
-        rr_wheel[0, :] += x
-        rr_wheel[1, :] += y
-        fl_wheel[0, :] += x
-        fl_wheel[1, :] += y
-        rl_wheel[0, :] += x
-        rl_wheel[1, :] += y
+        # outline[0, :] = np.add(outline[0, :], x)
+        # outline[1, :] += y
+        # fr_wheel[0, :] += x
+        # fr_wheel[1, :] += y
+        # rr_wheel[0, :] += x
+        # rr_wheel[1, :] += y
+        # fl_wheel[0, :] += x
+        # fl_wheel[1, :] += y
+        # rl_wheel[0, :] += x
+        # rl_wheel[1, :] += y
 
         plt.plot(np.array(outline[0, :]).flatten(),
                     np.array(outline[1, :]).flatten(), truckcolor)
@@ -89,7 +98,7 @@ class Vehicle (object):
                     np.array(fl_wheel[1, :]).flatten(), truckcolor)
         plt.plot(np.array(rl_wheel[0, :]).flatten(),
                     np.array(rl_wheel[1, :]).flatten(), truckcolor)
-        plt.plot(x, y, "*")
+        plt.plot(self.x, self.y, "*")
         #plt.show()
 
     #def update(self, acceleration, delta, dt):
