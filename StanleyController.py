@@ -25,10 +25,12 @@ class StanleyController:
 
     def stanleyControl(self, vehicle, path, yaw, last_target_idx):
 
-        current_target_idx, error_front_axle = self.calcTargetIndex(vehicle, path)
+        current_target_idx, error_front_axle = self.calcTargetIndex(vehicle, path, last_target_idx)
 
         if last_target_idx >= current_target_idx:
             current_target_idx = last_target_idx
+
+        print(current_target_idx)
 
         # theta_e corrects the heading error
         theta_e = StanleyController.normalizeAngle(yaw[current_target_idx] - vehicle.yaw)
@@ -45,7 +47,7 @@ class StanleyController:
         return delta, current_target_idx
 
     @staticmethod
-    def normalizeAngle( angle):
+    def normalizeAngle(angle):
         while angle > np.pi:
             angle -= 2.0 * np.pi
 
@@ -54,21 +56,44 @@ class StanleyController:
 
         return angle
 
+    # def calcTargetIndex(self, vehicle, path):
+    #     # Calc front axle position
+    #     fx = vehicle.x + vehicle.WB * np.cos(vehicle.yaw)
+    #     fy = vehicle.y + vehicle.WB * np.sin(vehicle.yaw)
 
-    def calcTargetIndex(self, vehicle, path):
+    #     # Search nearest point index
+    #     dx = [fx - ipath.x for ipath in path]
+    #     dy = [fy - ipath.y for ipath in path]
+    #     d = np.hypot(dx, dy)
+    #     target_idx = np.argmin(d)
+
+    #     # Project RMS error onto front axle vector
+    #     front_axle_vec = [-np.cos(vehicle.yaw + np.pi / 2),
+    #                     -np.sin(vehicle.yaw + np.pi / 2)]
+    #     error_front_axle = np.dot([dx[target_idx], dy[target_idx]], front_axle_vec)
+
+    #     return target_idx, error_front_axle
+
+
+    def calcTargetIndex(self, vehicle, path, current_idx):
         # Calc front axle position
         fx = vehicle.x + vehicle.WB * np.cos(vehicle.yaw)
         fy = vehicle.y + vehicle.WB * np.sin(vehicle.yaw)
 
         # Search nearest point index
-        dx = [fx - ipath.x for ipath in path]
-        dy = [fy - ipath.y for ipath in path]
+        if((current_idx + 10) > len(path)):
+            dx = [fx - ipath.x for ipath in path[current_idx : len(path)]]
+            dy = [fy - ipath.y for ipath in path[current_idx : len(path)]]
+        else:
+            dx = [fx - ipath.x for ipath in path[current_idx : current_idx + 10]]
+            dy = [fy - ipath.y for ipath in path[current_idx : current_idx + 10]]
+        #print(dx, dy)
         d = np.hypot(dx, dy)
-        target_idx = np.argmin(d)
+        target_idx = np.argmin(d) + current_idx
 
         # Project RMS error onto front axle vector
         front_axle_vec = [-np.cos(vehicle.yaw + np.pi / 2),
                         -np.sin(vehicle.yaw + np.pi / 2)]
-        error_front_axle = np.dot([dx[target_idx], dy[target_idx]], front_axle_vec)
+        error_front_axle = np.dot([dx[target_idx - current_idx], dy[target_idx - current_idx]], front_axle_vec)
 
         return target_idx, error_front_axle

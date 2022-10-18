@@ -77,17 +77,6 @@ class Vehicle (object):
         rl_wheel[0, :] += self.x
         rl_wheel[1, :] += self.y
 
-        # outline[0, :] = np.add(outline[0, :], x)
-        # outline[1, :] += y
-        # fr_wheel[0, :] += x
-        # fr_wheel[1, :] += y
-        # rr_wheel[0, :] += x
-        # rr_wheel[1, :] += y
-        # fl_wheel[0, :] += x
-        # fl_wheel[1, :] += y
-        # rl_wheel[0, :] += x
-        # rl_wheel[1, :] += y
-
         plt.plot(np.array(outline[0, :]).flatten(),
                     np.array(outline[1, :]).flatten(), truckcolor)
         plt.plot(np.array(fr_wheel[0, :]).flatten(),
