@@ -22,8 +22,8 @@ class Simulation:
                 plt.gcf().canvas.mpl_connect('key_release_event',
                     lambda event: [exit(0) if event.key == 'escape' else None])
                 vehicle.plot(plt, vehicle.x, vehicle.y, vehicle.yaw)
-                sw.plot(plt)
                 plt.plot(cx, cy, ".r", label="course")
+                sw.plot(plt, path, vehicle, target_idx)
                 plt.plot(cx[target_idx], cy[target_idx], "xg", label="target")
                 plt.axis("equal")
                 plt.grid(True)
