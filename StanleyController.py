@@ -30,7 +30,7 @@ class StanleyController:
         if last_target_idx >= current_target_idx:
             current_target_idx = last_target_idx
 
-        print(current_target_idx)
+        #print(current_target_idx)
 
         # theta_e corrects the heading error
         theta_e = StanleyController.normalizeAngle(yaw[current_target_idx] - vehicle.yaw)
@@ -55,25 +55,6 @@ class StanleyController:
             angle += 2.0 * np.pi
 
         return angle
-
-    # def calcTargetIndex(self, vehicle, path):
-    #     # Calc front axle position
-    #     fx = vehicle.x + vehicle.WB * np.cos(vehicle.yaw)
-    #     fy = vehicle.y + vehicle.WB * np.sin(vehicle.yaw)
-
-    #     # Search nearest point index
-    #     dx = [fx - ipath.x for ipath in path]
-    #     dy = [fy - ipath.y for ipath in path]
-    #     d = np.hypot(dx, dy)
-    #     target_idx = np.argmin(d)
-
-    #     # Project RMS error onto front axle vector
-    #     front_axle_vec = [-np.cos(vehicle.yaw + np.pi / 2),
-    #                     -np.sin(vehicle.yaw + np.pi / 2)]
-    #     error_front_axle = np.dot([dx[target_idx], dy[target_idx]], front_axle_vec)
-
-    #     return target_idx, error_front_axle
-
 
     def calcTargetIndex(self, vehicle, path, current_idx):
         # Calc front axle position

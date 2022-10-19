@@ -7,7 +7,8 @@ from UTMmodule import UTMmodule
 from Point import OriginalPoint
 from PathGenerator import PathGenerator
 from StanleyController import StanleyController
-from Simulation import Simulation
+from Simulation_2 import Simulation
+
 
 dt = 0.1
 
