@@ -35,11 +35,22 @@ og_points.append(OriginalPoint(10.773053, 106.659897))
 path_generator_instance  = PathGenerator()
 utm = UTMmodule()
 
-path, yaw = path_generator_instance.generatePath(og_points, utm)
-print("Type of path: " + str(type(path)))
+path, yaw, waypoint_indices = path_generator_instance.generatePath(og_points, utm)
+
+#print("Type of path: " + str(type(path)))
 
 path_x = []
 path_y = []
+waypoints = []
+waypoints_x = []
+waypoints_y = []
+
+for i in range(0, len(waypoint_indices)):
+    waypoints.append(path[waypoint_indices[i] - 1])
+    waypoints_x.append(waypoints[i].x)
+    waypoints_y.append(waypoints[i].y)
+    #print(waypoints[i].x, waypoints[i].y)
+
 
 for i in range(len(path)):
     path_x.append(path[i].x)
@@ -51,7 +62,7 @@ last_idx = len(path_x) -1
 target_idx, _ = scontroller.calcTargetIndex(vehicle, path, 0)
 print(target_idx)
 
-Simulation.simulate(vehicle, dt, 500, 3, scontroller, sw, target_idx, last_idx, path, yaw, 1)
+Simulation.simulate(vehicle, dt, 500, 3, scontroller, sw, target_idx, last_idx, path, waypoints, waypoint_indices, yaw, True)
 
 
 #print("Point 1: " + str(op1.getLat()) + " and " + str(op1.getLon()))

@@ -162,4 +162,4 @@ class PathGenerator():
         yaw_temp = yaw[len(yaw)-1]
         yaw.append(yaw_temp)
 
-        return path, yaw
+        return path, yaw, end_point_each_segments
