@@ -1,5 +1,7 @@
+from http import client
 from StanleyController import StanleyController
 from SlidingWindow import SlidingWindow
+from MQTTclient import MQTTclient
 import matplotlib.pyplot as plt
 import time as t
 import threading
@@ -9,7 +11,8 @@ class Simulation:
     def mainSimulationThread(vehicle, dt, max_sim_time, target_speed, scontroller, sw, target_idx, last_idx, path, waypoints, waypoint_indices, yaw, show_animation):
         try:
             global info
-            info = ""
+            info = "test"
+
             time = 0.0
             count = 0
             cx, cy = zip(*[(float(i.x),float(i.y)) for i in path])
@@ -50,19 +53,23 @@ class Simulation:
         except KeyboardInterrupt:
             print("Stopped the current path")
 
-    def communicationThread():
+    def communicationThread(mqttclient):
         global info
-        info = ""
+        info = "test"
         while(True):
             info = input("Write something")
             print(info)
+            if(info == "w"):
+                mqttclient.writeMessageArray()
             t.sleep(1)
     
     @staticmethod
     def simulate(vehicle, dt, max_sim_time, target_speed, scontroller, sw, target_idx, last_idx, path, waypoints, waypoint_indices, yaw, show_animation):
         info = ""
+        mqttclient = MQTTclient("broker.hivemq.com", 1883, "SimulationCart")
+        mqttclient.init("control/auto")
         SimulationThread = threading.Thread(target = Simulation.mainSimulationThread, args =(vehicle, dt, max_sim_time, target_speed, scontroller, sw, target_idx, last_idx, path, waypoints, waypoint_indices, yaw, show_animation))
-        CommunicationThread  = threading.Thread(target = Simulation.communicationThread, args = ())
+        CommunicationThread  = threading.Thread(target = Simulation.communicationThread, args = (mqttclient,))
 
         #SimulationThread.setDaemon(True)
         CommunicationThread.setDaemon(True)
