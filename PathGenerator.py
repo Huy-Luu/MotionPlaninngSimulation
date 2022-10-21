@@ -41,14 +41,14 @@ class PathGenerator():
             #print(og_points[i].getLat(), og_points[i].getLon())
             x_temp, y_temp = utm.fromLatlon(og_points[i].getLat(), og_points[i].getLon())
             cv_points.append(Point(x_temp, y_temp))
+
+        offset = Point(cv_points[0].x, cv_points[0].y)
         
-        offset_x = cv_points[0].x
-        offset_y = cv_points[0].y
             
         #offset
         for i in range(0,len(cv_points)):
-            cv_points[i].x = cv_points[i].x - offset_x
-            cv_points[i].y = cv_points[i].y - offset_y
+            cv_points[i].x = cv_points[i].x - offset.x
+            cv_points[i].y = cv_points[i].y - offset.y
             #PathGenerator.printPoint(cv_points[i])
             #print(cv_points[i].x, cv_points[i].y)
 
@@ -162,4 +162,4 @@ class PathGenerator():
         yaw_temp = yaw[len(yaw)-1]
         yaw.append(yaw_temp)
 
-        return path, yaw, end_point_each_segments
+        return path, yaw, end_point_each_segments, offset

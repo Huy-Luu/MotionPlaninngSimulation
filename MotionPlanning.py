@@ -48,7 +48,7 @@ for i in range(0,len(client.waypointlist)):
 path_generator_instance  = PathGenerator()
 utm = UTMmodule()
 
-path, yaw, waypoint_indices = path_generator_instance.generatePath(og_points, utm)
+path, yaw, waypoint_indices, offset = path_generator_instance.generatePath(og_points, utm)
 
 #print("Type of path: " + str(type(path)))
 
@@ -77,7 +77,7 @@ print(target_idx)
 
 
 
-Simulation.simulate(vehicle, dt, 500, 3, client, scontroller, sw, target_idx, last_idx, path, waypoints, waypoint_indices, yaw, True)
+Simulation.simulate(vehicle, dt, 500, 3, client, scontroller, sw, utm, target_idx, last_idx, path, waypoints, waypoint_indices, offset, yaw, True)
 
 
 #print("Point 1: " + str(op1.getLat()) + " and " + str(op1.getLon()))

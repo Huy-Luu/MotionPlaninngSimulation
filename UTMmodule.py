@@ -78,7 +78,7 @@ class UTMmodule(object):
         return (value + mathlib.pi) % (2 * mathlib.pi) - mathlib.pi
 
 
-    def toLatlon(easting, northing, zone_number, zone_letter=None, northern=None, strict=True):
+    def toLatLon(self, easting, northing, zone_number, zone_letter=None, northern=None, strict=True):
         """This function converts UTM coordinates to Latitude and Longitude
             Parameters
             ----------
@@ -111,12 +111,12 @@ class UTMmodule(object):
             raise ValueError('set either zone_letter or northern, but not both')
 
         if strict:
-            if not inBounds(easting, 100000, 1000000, upper_strict=True):
-                raise OutOfRangeError('easting out of range (must be between 100,000 m and 999,999 m)')
-            if not inBounds(northing, 0, 10000000):
-                raise OutOfRangeError('northing out of range (must be between 0 m and 10,000,000 m)')
+            if not self.inBounds(easting, 100000, 1000000, upper_strict=True):
+                raise self.OutOfRangeError('easting out of range (must be between 100,000 m and 999,999 m)')
+            if not self.inBounds(northing, 0, 10000000):
+                raise self.OutOfRangeError('northing out of range (must be between 0 m and 10,000,000 m)')
         
-        checkValidZone(zone_number, zone_letter)
+        self.checkValidZone(zone_number, zone_letter)
         
         if zone_letter:
             zone_letter = zone_letter.upper()
@@ -128,14 +128,14 @@ class UTMmodule(object):
         if not northern:
             y -= 10000000
 
-        m = y / K0
-        mu = m / (R * M1)
+        m = y / self.K0
+        mu = m / (self.R * self.M1)
 
         p_rad = (mu +
-                P2 * mathlib.sin(2 * mu) +
-                P3 * mathlib.sin(4 * mu) +
-                P4 * mathlib.sin(6 * mu) +
-                P5 * mathlib.sin(8 * mu))
+                self.P2 * mathlib.sin(2 * mu) +
+                self.P3 * mathlib.sin(4 * mu) +
+                self.P4 * mathlib.sin(6 * mu) +
+                self.P5 * mathlib.sin(8 * mu))
 
         p_sin = mathlib.sin(p_rad)
         p_sin2 = p_sin * p_sin
@@ -146,16 +146,16 @@ class UTMmodule(object):
         p_tan2 = p_tan * p_tan
         p_tan4 = p_tan2 * p_tan2
 
-        ep_sin = 1 - E * p_sin2
-        ep_sin_sqrt = mathlib.sqrt(1 - E * p_sin2)
+        ep_sin = 1 - self.E * p_sin2
+        ep_sin_sqrt = mathlib.sqrt(1 - self.E * p_sin2)
 
-        n = R / ep_sin_sqrt
-        r = (1 - E) / ep_sin
+        n = self.R / ep_sin_sqrt
+        r = (1 - self.E) / ep_sin
 
-        c = E_P2 * p_cos**2
+        c = self.E_P2 * p_cos**2
         c2 = c * c
 
-        d = x / (n * K0)
+        d = x / (n * self.K0)
         d2 = d * d
         d3 = d2 * d
         d4 = d3 * d
@@ -164,14 +164,14 @@ class UTMmodule(object):
 
         latitude = (p_rad - (p_tan / r) *
                     (d2 / 2 -
-                    d4 / 24 * (5 + 3 * p_tan2 + 10 * c - 4 * c2 - 9 * E_P2)) +
-                    d6 / 720 * (61 + 90 * p_tan2 + 298 * c + 45 * p_tan4 - 252 * E_P2 - 3 * c2))
+                    d4 / 24 * (5 + 3 * p_tan2 + 10 * c - 4 * c2 - 9 * self.E_P2)) +
+                    d6 / 720 * (61 + 90 * p_tan2 + 298 * c + 45 * p_tan4 - 252 * self.E_P2 - 3 * c2))
 
         longitude = (d -
                     d3 / 6 * (1 + 2 * p_tan2 + c) +
-                    d5 / 120 * (5 - 2 * c + 28 * p_tan2 - 3 * c2 + 8 * E_P2 + 24 * p_tan4)) / p_cos
+                    d5 / 120 * (5 - 2 * c + 28 * p_tan2 - 3 * c2 + 8 * self.E_P2 + 24 * p_tan4)) / p_cos
 
-        longitude = modAngle(longitude + mathlib.radians(zoneNumberToCentralLongitude(zone_number)))
+        longitude = self.modAngle(longitude + mathlib.radians(self.zoneNumberToCentralLongitude(zone_number)))
 
         return (mathlib.degrees(latitude),
                 mathlib.degrees(longitude))
