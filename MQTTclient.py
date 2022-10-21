@@ -7,7 +7,8 @@ class MQTTclient:
         self.broker = broker
         self.port = port
         self.client_id = client_id
-        self.message = []
+        self.waypointlist = []
+        self.waypointcame = False
 
     def connect(self):
         self.client = mqttclient.Client(self.client_id)
@@ -22,7 +23,14 @@ class MQTTclient:
     def onMessage(self, client, userdata, message):
         global info
         info = str(message.payload.decode("utf-8"))
-        self.message.append(info)
+        if (message.topic == "control/auto"):
+            if(info == "StartWaypoint"):
+                self.waypointlist.clear()
+            elif(info == "EndWaypoint"):
+                #do something to inform that all of them arrived
+                self.waypointcame = True
+            else:
+                self.waypointlist.append(info)
 
     def loop_start(self):
         self.client.loop_start()

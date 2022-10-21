@@ -12,9 +12,10 @@ class Point(object):
         return self.y
 
 class OriginalPoint(object):
-    def __init__(self, lat, lon):
-        self.lat = lat
-        self.lon = lon
+    def __init__(self, latlon):
+        data = latlon.split(",")
+        self.lat = float(data[0])
+        self.lon = float(data[1])
 
     def getLat(self):
         return self.lat

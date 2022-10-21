@@ -1,3 +1,4 @@
+from enum import Flag
 from SlidingWindow import SlidingWindow
 from StanleyController import StanleyController
 import numpy as np
@@ -7,6 +8,7 @@ from UTMmodule import UTMmodule
 from Point import OriginalPoint
 from PathGenerator import PathGenerator
 from StanleyController import StanleyController
+from MQTTclient import MQTTclient
 from Simulation_2 import Simulation
 
 
@@ -16,6 +18,8 @@ print("Init car")
 vehicle = Vehicle(0.0, 0.0, 0.0, 1.388, 30)
 scontroller = StanleyController()
 sw = SlidingWindow(10)
+client = MQTTclient("broker.hivemq.com", 1883, "SimulationCart")
+client.init("control/auto")
 
 #Initiate a set of original points
 og_points = []
@@ -28,10 +32,18 @@ og_points = []
 # og_points.append(OriginalPoint(10.772529, 106.659708))
 # og_points.append(OriginalPoint(10.772640, 106.659920))
 
-og_points.append(OriginalPoint(10.772972, 106.659762))
-og_points.append(OriginalPoint(10.772879, 106.660016))
-og_points.append(OriginalPoint(10.772824, 106.659838))
-og_points.append(OriginalPoint(10.773053, 106.659897))
+# og_points.append(OriginalPoint(10.772972, 106.659762))
+# og_points.append(OriginalPoint(10.772879, 106.660016))
+# og_points.append(OriginalPoint(10.772824, 106.659838))
+# og_points.append(OriginalPoint(10.773053, 106.659897))
+
+while(client.waypointcame == False):
+    pass
+client.waypointcame = False
+
+for i in range(0,len(client.waypointlist)):
+    og_points.append(OriginalPoint(client.waypointlist[i]))
+    print(og_points[i].getLat())
 
 path_generator_instance  = PathGenerator()
 utm = UTMmodule()
@@ -63,7 +75,9 @@ last_idx = len(path_x) -1
 target_idx, _ = scontroller.calcTargetIndex(vehicle, path, 0)
 print(target_idx)
 
-Simulation.simulate(vehicle, dt, 500, 3, scontroller, sw, target_idx, last_idx, path, waypoints, waypoint_indices, yaw, True)
+
+
+Simulation.simulate(vehicle, dt, 500, 3, client, scontroller, sw, target_idx, last_idx, path, waypoints, waypoint_indices, yaw, True)
 
 
 #print("Point 1: " + str(op1.getLat()) + " and " + str(op1.getLon()))

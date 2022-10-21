@@ -64,12 +64,11 @@ class Simulation:
             t.sleep(1)
     
     @staticmethod
-    def simulate(vehicle, dt, max_sim_time, target_speed, scontroller, sw, target_idx, last_idx, path, waypoints, waypoint_indices, yaw, show_animation):
+    def simulate(vehicle, dt, max_sim_time, target_speed, client, scontroller, sw, target_idx, last_idx, path, waypoints, waypoint_indices, yaw, show_animation):
         info = ""
-        mqttclient = MQTTclient("broker.hivemq.com", 1883, "SimulationCart")
-        mqttclient.init("control/auto")
+        
         SimulationThread = threading.Thread(target = Simulation.mainSimulationThread, args =(vehicle, dt, max_sim_time, target_speed, scontroller, sw, target_idx, last_idx, path, waypoints, waypoint_indices, yaw, show_animation))
-        CommunicationThread  = threading.Thread(target = Simulation.communicationThread, args = (mqttclient,))
+        CommunicationThread  = threading.Thread(target = Simulation.communicationThread, args = (client,))
 
         #SimulationThread.setDaemon(True)
         CommunicationThread.setDaemon(True)
