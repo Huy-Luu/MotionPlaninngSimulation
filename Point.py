@@ -5,11 +5,15 @@ class Point(object):
         self.x = x
         self.y = y
 
-    def getX():
+    def getX(self):
         return self.x
 
-    def getY():
+    def getY(self):
         return self.y
+
+    def set(x, y):
+        self.x = x
+        self.y = y
 
 class OriginalPoint(object):
     def __init__(self, latlon):

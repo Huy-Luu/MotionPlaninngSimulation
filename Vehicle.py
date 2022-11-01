@@ -6,21 +6,21 @@ from StanleyController import StanleyController
 class Vehicle (object):
 
     # Vehicle parameters
-    # LENGTH = 0.41  # [m]
-    # WIDTH = 0.36  # [m]
-    # BACKTOWHEEL = 0.03  # [m]
-    # WHEEL_LEN = 0.13  # [m]
-    # WHEEL_WIDTH = 0.015  # [m]
-    # TREAD = 0.33  # [m]
-    # WB = 0.29  # [m]
+    LENGTH = 0.41  # [m]
+    WIDTH = 0.36  # [m]
+    BACKTOWHEEL = 0.03  # [m]
+    WHEEL_LEN = 0.13  # [m]
+    WHEEL_WIDTH = 0.015  # [m]
+    TREAD = 0.33  # [m]
+    WB = 0.29  # [m]
 
-    LENGTH = 4.1  # [m]
-    WIDTH = 3.6  # [m]
-    BACKTOWHEEL = 0.3  # [m]
-    WHEEL_LEN = 1.3  # [m]
-    WHEEL_WIDTH = 0.15  # [m]
-    TREAD = 3.3  # [m]
-    WB = 2.9  # [m]
+    # LENGTH = 4.1  # [m]
+    # WIDTH = 3.6  # [m]
+    # BACKTOWHEEL = 0.3  # [m]
+    # WHEEL_LEN = 1.3  # [m]
+    # WHEEL_WIDTH = 0.15  # [m]
+    # TREAD = 3.3  # [m]
+    # WB = 2.9  # [m]
 
     max_steer = 30
 

@@ -74,36 +74,10 @@ class UTMmodule(object):
 
 
     def modAngle(self, value):
-        """Returns angle in radians to be between -pi and pi"""
         return (value + mathlib.pi) % (2 * mathlib.pi) - mathlib.pi
 
 
     def toLatLon(self, easting, northing, zone_number, zone_letter=None, northern=None, strict=True):
-        """This function converts UTM coordinates to Latitude and Longitude
-            Parameters
-            ----------
-            easting: int or NumPy array
-                Easting value of UTM coordinates
-            northing: int or NumPy array
-                Northing value of UTM coordinates
-            zone_number: int
-                Zone number is represented with global map numbers of a UTM zone
-                numbers map. For more information see utmzones [1]_
-            zone_letter: str
-                Zone letter can be represented as string values.  UTM zone
-                designators can be seen in [1]_
-            northern: bool
-                You can set True or False to set this parameter. Default is None
-            strict: bool
-                Raise an OutOfRangeError if outside of bounds
-            Returns
-            -------
-            latitude: float or NumPy array
-                Latitude between 80 deg S and 84 deg N, e.g. (-80.0 to 84.0)
-            longitude: float or NumPy array
-                Longitude between 180 deg W and 180 deg E, e.g. (-180.0 to 180.0).
-        .. _[1]: http://www.jaworski.ca/utmzones.htm
-        """
         if not zone_letter and northern is None:
             raise ValueError('either zone_letter or northern needs to be set')
 
@@ -178,34 +152,6 @@ class UTMmodule(object):
 
 
     def fromLatlon(self, latitude, longitude, force_zone_number=None, force_zone_letter=None):
-        """This function converts Latitude and Longitude to UTM coordinate
-            Parameters
-            ----------
-            latitude: float or NumPy array
-                Latitude between 80 deg S and 84 deg N, e.g. (-80.0 to 84.0)
-            longitude: float or NumPy array
-                Longitude between 180 deg W and 180 deg E, e.g. (-180.0 to 180.0).
-            force_zone_number: int
-                Zone number is represented by global map numbers of an UTM zone
-                numbers map. You may force conversion to be included within one
-                UTM zone number.  For more information see utmzones [1]_
-            force_zone_letter: str
-                You may force conversion to be included within one UTM zone
-                letter.  For more information see utmzones [1]_
-            Returns
-            -------
-            easting: float or NumPy array
-                Easting value of UTM coordinates
-            northing: float or NumPy array
-                Northing value of UTM coordinates
-            zone_number: int
-                Zone number is represented by global map numbers of a UTM zone
-                numbers map. More information see utmzones [1]_
-            zone_letter: str
-                Zone letter is represented by a string value. UTM zone designators
-                can be accessed in [1]_
-        .. _[1]: http://www.jaworski.ca/utmzones.htm
-        """
         #print("In UTM module: " + str(latitude) + " " + str(longitude))
         if not self.inBounds(latitude, -80, 84):
             raise self.OutOfRangeError('latitude out of range (must be between 80 deg S and 84 deg N)')
@@ -268,8 +214,6 @@ class UTMmodule(object):
 
 
     def latitudeToZoneLetter(self, latitude):
-        # If the input is a numpy array, just use the first element
-        # User responsibility to make sure that all points are in one zone
         if use_numpy and isinstance(latitude, mathlib.ndarray):
             latitude = latitude.flat[0]
 
@@ -280,8 +224,6 @@ class UTMmodule(object):
 
 
     def latlonToZoneNumber(self, latitude, longitude):
-        # If the input is a numpy array, just use the first element
-        # User responsibility to make sure that all points are in one zone
         if use_numpy:
             if isinstance(latitude, mathlib.ndarray):
                 latitude = latitude.flat[0]
