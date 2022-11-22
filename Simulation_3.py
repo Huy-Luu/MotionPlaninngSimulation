@@ -3,18 +3,15 @@ from StanleyController import StanleyController
 from SlidingWindow import SlidingWindow
 from MQTTclient import MQTTclient
 from Point import Point
+from SteeringMappingSender import SteeingMappingSender
 import matplotlib.pyplot as plt
 import time as t
 import threading
 
 class Simulation:
 
-    def mainSimulationThread(vehicle, dt, max_sim_time, target_speed, client, scontroller, sw, utmmodule, target_idx, last_idx, path, waypoints, waypoint_indices, offset, yaw, show_animation):
+    def mainSimulationThread(vehicle, dt, max_sim_time, target_speed, client, scontroller, shandler, sw, utmmodule, target_idx, last_idx, path, waypoints, waypoint_indices, offset, yaw, show_animation):
         try:
-            #write to file for testing real life situation
-            f = open("E:\\New folder\BK\HK221\Luan_van_tot_nghiep\Software\MotionPlaninngSimulation\data.txt", 'a')
-
-
             global info
             info = "test"
             time = 0.0
@@ -24,10 +21,16 @@ class Simulation:
             wp_about_to_arrive = 1
             cx, cy = zip(*[(float(i.x),float(i.y)) for i in path])
             wpx, wpy = zip(*[(float(wp.x),float(wp.y)) for wp in waypoints])
+            shandler.send("t") # update continuously
+            vehicle.x, vehicle.y, vehicle.v, vehicle.yaw = shandler.receiveFourInputs()
             while max_sim_time >= time and last_idx > target_idx:
                 di, target_idx = scontroller.stanleyControl(vehicle, path, yaw, target_idx)
-                vehicle.update(di, dt)
-                f.write(str(vehicle.x) + "," + str(vehicle.y) + "," + str(vehicle.v) + "," + str(vehicle.yaw) + ","  + '\r')
+                SteeingMappingSender.sendMapped(shandler, di)
+                
+                #Replace vehicle update with reading data
+                #vehicle.update(di, dt)
+                shandler.send("t") # update continuously
+                vehicle.x, vehicle.y, vehicle.v, vehicle.yaw = shandler.receiveFourInputs()
 
                 x, y =utmmodule.toLatLon(vehicle.x + offset.x, vehicle.y + offset.y, 48, zone_letter="N")
                 point_to_send = Point(x, y)
@@ -89,10 +92,10 @@ class Simulation:
             t.sleep(1)
     
     @staticmethod
-    def simulate(vehicle, dt, max_sim_time, target_speed, client, scontroller, sw, utmmodule, target_idx, last_idx, path, waypoints, waypoint_indices, offset, yaw, show_animation):
+    def simulate(vehicle, dt, max_sim_time, target_speed, client, scontroller, shandler, sw, utmmodule, target_idx, last_idx, path, waypoints, waypoint_indices, offset, yaw, show_animation):
         info = ""
         
-        SimulationThread = threading.Thread(target = Simulation.mainSimulationThread, args =(vehicle, dt, max_sim_time, target_speed, client, scontroller, sw, utmmodule, target_idx, last_idx, path, waypoints, waypoint_indices, offset, yaw, show_animation))
+        SimulationThread = threading.Thread(target = Simulation.mainSimulationThread, args =(vehicle, dt, max_sim_time, target_speed, client, scontroller, shandler, sw, utmmodule, target_idx, last_idx, path, waypoints, waypoint_indices, offset, yaw, show_animation))
         CommunicationThread  = threading.Thread(target = Simulation.communicationThread, args = (client,))
 
         #SimulationThread.setDaemon(True)
@@ -100,5 +103,3 @@ class Simulation:
 
         SimulationThread.start()
         CommunicationThread.start()
-
-

@@ -1,7 +1,4 @@
 from __future__ import division
-
-# For most use cases in this module, numpy is indistinguishable
-# from math, except it also works on numpy arrays
 try:
     import numpy as mathlib
     use_numpy = True

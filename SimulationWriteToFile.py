@@ -3,6 +3,7 @@ from StanleyController import StanleyController
 from SlidingWindow import SlidingWindow
 from MQTTclient import MQTTclient
 from Point import Point
+import numpy as np
 import matplotlib.pyplot as plt
 import time as t
 import threading
@@ -27,9 +28,10 @@ class Simulation:
             while max_sim_time >= time and last_idx > target_idx:
                 di, target_idx = scontroller.stanleyControl(vehicle, path, yaw, target_idx)
                 vehicle.update(di, dt)
-                f.write(str(vehicle.x) + "," + str(vehicle.y) + "," + str(vehicle.v) + "," + str(vehicle.yaw) + ","  + '\r')
 
                 x, y =utmmodule.toLatLon(vehicle.x + offset.x, vehicle.y + offset.y, 48, zone_letter="N")
+                f.write(str(x) + "," + str(y) + "," + str(vehicle.v) + "," + str(np.degrees(vehicle.yaw)) + ","  + '\r')
+                
                 point_to_send = Point(x, y)
                 message = str(point_to_send.getY()) + "," + str(point_to_send.getX()) + "," + str(wp_arr_flag) + "," + str(wp_no_arrived) + "," + str(wp_about_to_arrive) + "," + "3.0" + "," + "180.0"
                 client.publish(message, "data/position")
