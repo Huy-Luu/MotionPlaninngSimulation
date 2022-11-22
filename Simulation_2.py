@@ -9,11 +9,11 @@ import threading
 
 class Simulation:
 
-    def mainSimulationThread(vehicle, dt, max_sim_time, target_speed, client, scontroller, sw, utmmodule, target_idx, last_idx, path, waypoints, waypoint_indices, offset, yaw, show_animation):
+    @staticmethod
+    def simulate(vehicle, dt, max_sim_time, target_speed, client, scontroller, sw, utmmodule, target_idx, last_idx, path, waypoints, waypoint_indices, offset, yaw, show_animation):
         try:
             #write to file for testing real life situation
             f = open("E:\\New folder\BK\HK221\Luan_van_tot_nghiep\Software\MotionPlaninngSimulation\data.txt", 'a')
-
 
             global info
             info = "test"
@@ -78,27 +78,6 @@ class Simulation:
         except KeyboardInterrupt:
             print("Stopped the current path")
 
-    def communicationThread(mqttclient):
-        global info
-        info = "test"
-        while(True):
-            info = input("Write something")
-            print(info)
-            if(info == "w"):
-                mqttclient.writeMessageArray()
-            t.sleep(1)
-    
-    @staticmethod
-    def simulate(vehicle, dt, max_sim_time, target_speed, client, scontroller, sw, utmmodule, target_idx, last_idx, path, waypoints, waypoint_indices, offset, yaw, show_animation):
-        info = ""
-        
-        SimulationThread = threading.Thread(target = Simulation.mainSimulationThread, args =(vehicle, dt, max_sim_time, target_speed, client, scontroller, sw, utmmodule, target_idx, last_idx, path, waypoints, waypoint_indices, offset, yaw, show_animation))
-        CommunicationThread  = threading.Thread(target = Simulation.communicationThread, args = (client,))
 
-        #SimulationThread.setDaemon(True)
-        CommunicationThread.setDaemon(True)
-
-        SimulationThread.start()
-        CommunicationThread.start()
 
 

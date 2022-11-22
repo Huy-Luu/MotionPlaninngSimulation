@@ -10,7 +10,7 @@ from PathGenerator import PathGenerator
 from StanleyController import StanleyController
 from MQTTclient import MQTTclient
 from SerialDataHandler import SerialDataHandler
-from Simulation_3 import Simulation
+from Simulation_2 import Simulation
 
 
 dt = 0.1
@@ -21,7 +21,7 @@ print("Init car")
 vehicle = Vehicle(0.0, 0.0, 0.0, 1.388, 30)
 scontroller = StanleyController()
 sw = SlidingWindow(10)
-shandler = SerialDataHandler('COM1', 115200)
+#shandler = SerialDataHandler('COM1', 115200)
 client = MQTTclient("broker.hivemq.com", 1883, "SimulationCart")
 client.init("control/auto")
 path_generator_instance  = PathGenerator()
@@ -76,7 +76,7 @@ while True:
         target_speed=3,
         client=client,
         scontroller=scontroller,
-        shandler=shandler,
+        #shandler=shandler,
         sw=sw,
         utmmodule=utm,
         target_idx=target_idx,

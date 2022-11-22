@@ -29,7 +29,7 @@ class Vehicle (object):
         self.y = y
         self.yaw = yaw
         self.v = v
-        self.max_steer = max_steer
+        self.max_steer = np.radians(max_steer)
         print("Position: " + str(self.getX()) + " and " + str(self.getY()))
         
     def plot(self, plt, x, y, yaw, steer=0.0, cabcolor="-r", truckcolor="-k"):
