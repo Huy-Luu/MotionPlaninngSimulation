@@ -27,11 +27,18 @@ client.init("control/auto")
 path_generator_instance  = PathGenerator()
 utm = UTMmodule()
 
+current_lat = 10.7728270721655
+current_lon = 106.659825146198
+
 og_points = []
 
 while True:
     while(client.waypointcame == False):
-        pass
+        if(client.request_current_position == True):
+            print("Sending current position")
+            message = str(current_lon) + "," + str(current_lat)
+            client.publish(message,"data/position")
+            client.request_current_position = False
     client.waypointcame = False
 
     vehicle.x = 0
