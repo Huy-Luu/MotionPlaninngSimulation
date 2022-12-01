@@ -34,11 +34,12 @@ while True:
         pass
     client.waypointcame = False
 
+    vehicle.x = 0
+    vehicle.y = 0
+
     for i in range(0,len(client.waypointlist)):
         og_points.append(OriginalPoint(client.waypointlist[i]))
         print(og_points[i].getLat())
-
-
 
     path, yaw, waypoint_indices, offset = path_generator_instance.generatePath(og_points, utm)
 
@@ -81,6 +82,7 @@ while True:
         utmmodule=utm,
         target_idx=target_idx,
         last_idx=last_idx,
+        og_points=og_points,
         path=path,
         waypoints=waypoints,
         waypoint_indices=waypoint_indices,

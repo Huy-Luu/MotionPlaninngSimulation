@@ -37,7 +37,7 @@ class StanleyController:
         delta = theta_e + theta_d
 
         delta = self.steeringBoundary(delta)
-        #delta = self.steeringMapping(delta)
+        delta = self.steeringMapping(delta)
 
         #print(math.degrees(delta))
 

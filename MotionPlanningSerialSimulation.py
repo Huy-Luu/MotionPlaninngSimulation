@@ -82,6 +82,7 @@ Simulation.simulate(
     utmmodule=utm,
     target_idx=target_idx,
     last_idx=last_idx,
+    og_points=og_points,
     path=path,
     waypoints=waypoints,
     waypoint_indices=waypoint_indices,

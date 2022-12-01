@@ -10,7 +10,7 @@ import threading
 
 class Simulation:
 
-    def mainSimulationThread(vehicle, dt, max_sim_time, target_speed, client, scontroller, shandler, sw, utmmodule, target_idx, last_idx, path, waypoints, waypoint_indices, offset, yaw, show_animation):
+    def simulate(vehicle, dt, max_sim_time, target_speed, client, scontroller, shandler, sw, utmmodule, target_idx, last_idx, og_points, path, waypoints, waypoint_indices, offset, yaw, show_animation):
         try:
             global info
             info = "test"
@@ -19,6 +19,13 @@ class Simulation:
             wp_arr_flag = 0
             wp_no_arrived = 1
             wp_about_to_arrive = 1
+
+            f = open(r"E:/New folder/BK/HK221/Luan_van_tot_nghiep/Software/MotionPlaninngSimulation/real_data.txt", "a")
+            f.write("Waypoints" + '\r')
+            for i in range(0, len(og_points)):
+                f.write(str(og_points[i].getLat()) + str(og_points[i].getLon()) + '\r')
+            f.write("Positions" + '\r')
+
             cx, cy = zip(*[(float(i.x),float(i.y)) for i in path])
             wpx, wpy = zip(*[(float(wp.x),float(wp.y)) for wp in waypoints])
             shandler.send("t") # update continuously
@@ -31,11 +38,19 @@ class Simulation:
                 #vehicle.update(di, dt)
                 shandler.send("t") # update continuously
                 vehicle.x, vehicle.y, vehicle.v, vehicle.yaw = shandler.receiveFourInputs()
+                lat=vehicle.x
+                lon = vehicle.y
+                print("Got data")
+                f.write(str(vehicle.x) + "," + str(vehicle.y) + "," + str(vehicle.v) + "," + str(vehicle.yaw) + ","  + '\r')
 
-                x, y =utmmodule.toLatLon(vehicle.x + offset.x, vehicle.y + offset.y, 48, zone_letter="N")
-                point_to_send = Point(x, y)
+                x,y =utmmodule.fromLatlon(vehicle.x, vehicle.y)
+                vehicle.x = x - offset.x
+                vehicle.y = y - offset.y
+                point_to_send = Point(lat, lon)
                 message = str(point_to_send.getY()) + "," + str(point_to_send.getX()) + "," + str(wp_arr_flag) + "," + str(wp_no_arrived) + "," + str(wp_about_to_arrive) + "," + "3.0" + "," + "180.0"
                 client.publish(message, "data/position")
+
+                print("Done processing")
 
                 if(info == "f"):
                     vehicle.v = 0
@@ -49,6 +64,7 @@ class Simulation:
                     message = str(point_to_send.getY()) + "," + str(point_to_send.getX()) + "," + str(wp_arr_flag) + "," + str(wp_no_arrived) + "," + str(wp_about_to_arrive) + "," + "3.0" + "," + "180.0"
                     client.publish(message, "data/position")
                     print("REACHED WAYPOINT")
+                    f.write("Reached Waypoint" + '\r')
                     t.sleep(3)
                     count+=1
 
@@ -77,29 +93,7 @@ class Simulation:
             wp_about_to_arrive += 1
             message = str(point_to_send.getY()) + "," + str(point_to_send.getX()) + "," + str(wp_arr_flag) + "," + str(wp_no_arrived) + "," + str(wp_about_to_arrive) + "," + "3.0" + "," + "180.0"
             client.publish(message, "data/position")
+            f.write(str(vehicle.x) + "," + str(vehicle.y) + "," + str(vehicle.v) + "," + str(vehicle.yaw) + ","  + '\r')
 
         except KeyboardInterrupt:
             print("Stopped the current path")
-
-    def communicationThread(mqttclient):
-        global info
-        info = "test"
-        while(True):
-            info = input("Write something")
-            print(info)
-            if(info == "w"):
-                mqttclient.writeMessageArray()
-            t.sleep(1)
-    
-    @staticmethod
-    def simulate(vehicle, dt, max_sim_time, target_speed, client, scontroller, shandler, sw, utmmodule, target_idx, last_idx, path, waypoints, waypoint_indices, offset, yaw, show_animation):
-        info = ""
-        
-        SimulationThread = threading.Thread(target = Simulation.mainSimulationThread, args =(vehicle, dt, max_sim_time, target_speed, client, scontroller, shandler, sw, utmmodule, target_idx, last_idx, path, waypoints, waypoint_indices, offset, yaw, show_animation))
-        CommunicationThread  = threading.Thread(target = Simulation.communicationThread, args = (client,))
-
-        #SimulationThread.setDaemon(True)
-        CommunicationThread.setDaemon(True)
-
-        SimulationThread.start()
-        CommunicationThread.start()
